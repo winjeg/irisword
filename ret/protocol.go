@@ -23,7 +23,7 @@ func Ok(ctx iris.Context, data ...interface{}) {
 	if len(data) > 0 {
 		d = data[0]
 	}
-	_, err := ctx.JSON(Ret{
+	err := ctx.JSON(Ret{
 		Code: Success.Code,
 		Msg:  Success.Msg,
 		Data: d,
@@ -37,7 +37,7 @@ func BadRequest(ctx iris.Context, msg ...string) {
 	if len(strings.TrimSpace(m)) == 0 {
 		m = IllegalParam.Msg
 	}
-	_, err := ctx.JSON(Ret{
+	err := ctx.JSON(Ret{
 		Code: IllegalParam.Code,
 		Msg:  m,
 	})
@@ -50,7 +50,7 @@ func ServerError(ctx iris.Context, msg ...string) {
 	if len(strings.TrimSpace(m)) == 0 {
 		m = InternalError.Msg
 	}
-	_, err := ctx.JSON(Ret{
+	err := ctx.JSON(Ret{
 		Code: InternalError.Code,
 		Msg:  m,
 	})
@@ -63,7 +63,7 @@ func BizError(ctx iris.Context, code int, msg ...string) {
 	if len(strings.TrimSpace(m)) == 0 {
 		m = BizErr.Msg
 	}
-	_, err := ctx.JSON(Ret{
+	err := ctx.JSON(Ret{
 		Code: BizErr.Code,
 		Msg:  m,
 	})
@@ -72,7 +72,7 @@ func BizError(ctx iris.Context, code int, msg ...string) {
 
 // NotFound 找不到资源
 func NotFound(ctx iris.Context) {
-	_, err := ctx.JSON(Ret{
+	err := ctx.JSON(Ret{
 		Code: 404,
 		Msg:  fmt.Sprintf("route not found: %s", ctx.Path()),
 	})
