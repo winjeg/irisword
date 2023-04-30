@@ -11,12 +11,6 @@ import (
 
 var logger = log.GetLogger(nil)
 
-type Ret struct {
-	Code int         `json:"code"`
-	Msg  string      `json:"msg,omitempty"`
-	Data interface{} `json:"data"`
-}
-
 // Ok 正常返回
 func Ok(ctx iris.Context, data ...interface{}) {
 	var d interface{} = nil
@@ -73,8 +67,8 @@ func BizError(ctx iris.Context, code int, msg ...string) {
 // NotFound 找不到资源
 func NotFound(ctx iris.Context) {
 	err := ctx.JSON(Ret{
-		Code: 404,
-		Msg:  fmt.Sprintf("route not found: %s", ctx.Path()),
+		Code: NoFound.Code,
+		Msg:  fmt.Sprintf("%s: %s", NoFound.Msg, ctx.Path()),
 	})
 	logErr(ctx, err)
 }
