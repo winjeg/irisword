@@ -1,3 +1,10 @@
 package middleware
 
-// TODO log request,  with url, cost and params
+import "github.com/kataras/iris/v12"
+
+type RequestLogConfig struct {
+}
+
+func NewRequestLogger(cfg *RequestLogConfig) iris.Handler {
+	return nil
+}

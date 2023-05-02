@@ -5,4 +5,6 @@ type MonitorConfig struct {
 	Path string `json:"path" yaml:"path"`
 }
 
-// TODO expose prometheus config
+func NewMonitor(cfg *MonitorConfig) {
+
+}
