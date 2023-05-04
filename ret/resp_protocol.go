@@ -20,5 +20,6 @@ var (
 	NoFound       = ErrorCode{"404", "route not found!"}
 	InternalError = ErrorCode{"500", "internal error"}
 	IllegalParam  = ErrorCode{"400", "illegal param"}
+	UnknownErr    = ErrorCode{"999", "unknown error"}
 	BizErr        = ErrorCode{"1000", "biz error"}
 )

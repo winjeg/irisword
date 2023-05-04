@@ -52,13 +52,26 @@ func ServerError(ctx iris.Context, msg ...string) {
 }
 
 // BizError 业务错误一般调用此方法
-func BizError(ctx iris.Context, code int, msg ...string) {
+func BizError(ctx iris.Context, code string, msg ...string) {
 	m := strings.Join(msg, "\t")
 	if len(strings.TrimSpace(m)) == 0 {
 		m = BizErr.Msg
 	}
 	err := ctx.JSON(Ret{
-		Code: BizErr.Code,
+		Code: code,
+		Msg:  m,
+	})
+	logErr(ctx, err)
+}
+
+// UnknownError error that could not be identified
+func UnknownError(ctx iris.Context, msg ...string) {
+	m := strings.Join(msg, "\t")
+	if len(strings.TrimSpace(m)) == 0 {
+		m = UnknownErr.Msg
+	}
+	err := ctx.JSON(Ret{
+		Code: UnknownErr.Code,
 		Msg:  m,
 	})
 	logErr(ctx, err)
