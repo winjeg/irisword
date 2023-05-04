@@ -1,7 +1,10 @@
 package middleware
 
+// call NewJWT first, if you have a
+
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/kataras/iris/v12"
@@ -12,17 +15,34 @@ import (
 
 // JWTConfig Json Web Token config
 type JWTConfig struct {
-	Name         string `json:"name" yaml:"name"`
-	Secret       string `json:"key" yaml:"key"`
-	Expire       int    `json:"expire" yaml:"expire"`
-	Claims       func() interface{}
-	Deserializer func(data []byte) (interface{}, error)
+	Name   string `json:"name" yaml:"name"`     // Name of the JWT
+	Expire int    `json:"expire" yaml:"expire"` // JWT expire time
+	Domain string `json:"domain" yaml:"domain"` // JWT domain
+	Secret string `json:"key" yaml:"key"`       // Secret of the JWT
+
+	Claims       func() interface{}                     // set if the return value from NewJWT is used as middleware
+	Deserializer func(data []byte) (interface{}, error) // must be set
 }
 
-var localJWTCfg *JWTConfig = nil
+var (
+	localJWTCfg *JWTConfig = nil
+	lock                   = sync.Mutex{}
+)
 
+// NewJWT return the JWT middleware for iris web framework
+// This returned middleware can be used in the project
+// only if you need to set Token only here, also you can use in any project if you want,
+// just make sure the configuration is the same.
 func NewJWT(cfg *JWTConfig) iris.Handler {
+	if localJWTCfg != nil {
+		return func(ctx iris.Context) {
+			ctx.Next()
+		}
+	}
+	lock.Lock()
 	localJWTCfg = cfg
+	lock.Unlock()
+
 	return func(ctx iris.Context) {
 		session := GetFromJWT(ctx)
 		if session != nil {
@@ -39,6 +59,7 @@ func NewJWT(cfg *JWTConfig) iris.Handler {
 		loc, _ := time.LoadLocation("Asia/Shanghai")
 		ctx.SetCookie(&http.Cookie{
 			Name:       cfg.Name,
+			Domain:     cfg.Domain,
 			Value:      string(token),
 			Path:       "/",
 			Expires:    time.Now().Add(time.Second * time.Duration(cfg.Expire)).In(loc).Local(),
@@ -75,6 +96,8 @@ func setJWTSession(ctx iris.Context) {
 }
 
 // GetFromJWT get raw claims info  set from config
+// When called this method will need JWTConfig initialed first, call NewJWT if necessary
+// You can get token from the
 func GetFromJWT(ctx iris.Context) interface{} {
 	if localJWTCfg == nil {
 		log.GetLogger(nil).Warnf("GetFromJWT middleware not initialized!")
