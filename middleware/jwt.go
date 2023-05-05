@@ -20,8 +20,8 @@ type JWTConfig struct {
 	Domain string `json:"domain" yaml:"domain"` // JWT domain
 	Secret string `json:"key" yaml:"key"`       // Secret of the JWT
 
-	Claims       func() interface{}                     // set if the return value from NewJWT is used as middleware
-	Deserializer func(data []byte) (interface{}, error) // must be set
+	Claims       func(ctx iris.Context) (interface{}, error) // set if the return value from NewJWT is used as middleware
+	Deserializer func(data []byte) (interface{}, error)      // must be set
 }
 
 var (
@@ -50,8 +50,12 @@ func NewJWT(cfg *JWTConfig) iris.Handler {
 			return
 		}
 		sigKey := []byte(cfg.Secret)
-		claims := cfg.Claims()
-		token, err := jwt.Sign(jwt.HS256, sigKey, claims, jwt.MaxAge(15*time.Minute))
+		claims, err := cfg.Claims(ctx)
+		if err != nil {
+			ret.Unauthorized(ctx, err.Error())
+			return
+		}
+		token, err := jwt.Sign(jwt.HS256, sigKey, claims, jwt.MaxAge(time.Duration(cfg.Expire)*time.Second))
 		if err != nil {
 			ret.ServerError(ctx, "error generating token")
 			return
@@ -71,14 +75,13 @@ func NewJWT(cfg *JWTConfig) iris.Handler {
 			Unparsed:   nil,
 		})
 		// when all set, set the session for later use.
-		setJWTSession(ctx)
+		ret.Ok(ctx)
 	}
 }
 
-func setJWTSession(ctx iris.Context) {
+func JWTSession(ctx iris.Context) {
 	if localJWTCfg == nil {
-		log.GetLogger(nil).Warnf("JWTSession middleware not initialized!")
-		ret.BadRequest(ctx, "JWT not initialized!")
+		ret.BadRequest(ctx, "user not login")
 		return
 	}
 	sigKey := []byte(localJWTCfg.Secret)

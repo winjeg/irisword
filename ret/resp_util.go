@@ -86,6 +86,19 @@ func NotFound(ctx iris.Context) {
 	logErr(ctx, err)
 }
 
+// Unauthorized 未授权
+func Unauthorized(ctx iris.Context, msg ...string) {
+	m := strings.Join(msg, "\t")
+	if len(strings.TrimSpace(m)) == 0 {
+		m = NoAuth.Msg
+	}
+	err := ctx.JSON(Ret{
+		Code: NoAuth.Code,
+		Msg:  fmt.Sprintf("%s: %s", NoAuth.Msg, ctx.Path()),
+	})
+	logErr(ctx, err)
+}
+
 func logErr(ctx iris.Context, err error) {
 	if err != nil {
 		logger.WithFields(logrus.Fields{

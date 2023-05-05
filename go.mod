@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/kataras/iris/v12 v12.2.0
+	github.com/kataras/jwt v0.1.8
 	github.com/sirupsen/logrus v1.8.1
 	github.com/winjeg/go-commons v1.2.3
 )

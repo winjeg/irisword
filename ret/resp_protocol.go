@@ -17,6 +17,7 @@ type Ret struct {
 // Since we try to use the http code as much as we can
 var (
 	Success       = ErrorCode{"0", "success"}
+	NoAuth        = ErrorCode{"401", "unauthorized!"}
 	NoFound       = ErrorCode{"404", "route not found!"}
 	InternalError = ErrorCode{"500", "internal error"}
 	IllegalParam  = ErrorCode{"400", "illegal param"}
