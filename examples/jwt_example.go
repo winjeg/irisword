@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+
 	"github.com/kataras/iris/v12"
 	"github.com/winjeg/irisword/middleware"
 	"github.com/winjeg/irisword/ret"

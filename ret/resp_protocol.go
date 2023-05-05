@@ -1,3 +1,5 @@
+//go:build go1.16
+
 package ret
 
 // ErrorCode for most defined errors

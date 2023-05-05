@@ -1,6 +1,9 @@
-package middleware
+//go:build go1.16
 
-// call NewJWT first, if you have a
+// Package middleware call NewJWT first
+// basicly one app need all these three functions exposed
+
+package middleware
 
 import (
 	"net/http"
@@ -81,7 +84,11 @@ func NewJWT(cfg *JWTConfig) iris.Handler {
 
 func JWTSession(ctx iris.Context) {
 	if localJWTCfg == nil {
-		ret.BadRequest(ctx, "user not login")
+		ret.Unauthorized(ctx, "user not login")
+		return
+	}
+	if GetFromJWT(ctx) != nil {
+		ctx.Next()
 		return
 	}
 	sigKey := []byte(localJWTCfg.Secret)
