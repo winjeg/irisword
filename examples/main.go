@@ -10,6 +10,8 @@ func main() {
 	app.Get("/ping", func(ctx iris.Context) {
 		_, _ = ctx.Text("pong")
 	})
+
 	regJWT(app)
+
 	_ = app.Listen(":8000")
 }

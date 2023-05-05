@@ -88,7 +88,7 @@ func JWTSession(ctx iris.Context) {
 	tk := ctx.GetCookie(localJWTCfg.Name)
 	verifiedToken, err := jwt.Verify(jwt.HS256, sigKey, []byte(tk))
 	if err != nil || verifiedToken.StandardClaims.IssuedAt > time.Now().Unix() {
-		ret.BadRequest(ctx, "unauthorized!")
+		ret.Unauthorized(ctx, "unauthorized!")
 		return
 	}
 	session, err := localJWTCfg.Deserializer(verifiedToken.Payload)
