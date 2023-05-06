@@ -6,5 +6,5 @@ import (
 )
 
 func regCORS(app *iris.Application) {
-	app.UseRouter(middleware.NewCORS(&middleware.CorsConfig{AllowOrigin: []string{"*:8000"}}))
+	app.UseRouter(middleware.NewCORS(&middleware.CorsConfig{AllowOrigin: []string{"localhost"}}))
 }

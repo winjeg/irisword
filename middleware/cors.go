@@ -33,6 +33,7 @@ type CorsConfig struct {
 }
 
 // NewCORS POST、PUT、PATCH和DELETE 标准上要求浏览器在这些请求上都要加上 Origin Header
+// CORS 安全策略主要应用于浏览器页面跨域访问的时候，对于非浏览器页面请求，业界通常不予以特殊拦截
 func NewCORS(cfg *CorsConfig) iris.Handler {
 	return func(ctx iris.Context) {
 		ctx.Header(varyHeader, originRequestHeader)
@@ -40,19 +41,35 @@ func NewCORS(cfg *CorsConfig) iris.Handler {
 			ctx.Header(varyHeader, requestMethodHeader)
 			ctx.Header(varyHeader, requestHeadersHeader)
 		}
+
 		requestOrigin := ctx.GetHeader(originRequestHeader)
-		// 一般都是 *.xx.com 或者 zz.xx.com
-		for _, origin := range cfg.AllowOrigin {
-			if strings.Index(origin, "*") == 0 {
-				// 默认情况下 origin 获取不到
-				if strings.Index(requestOrigin, origin[1:]) == -1 {
-					ctx.StopWithStatus(http.StatusForbidden)
-					return
-				}
-			} else {
-				if !strings.EqualFold(requestOrigin, origin) {
-					ctx.StopWithStatus(http.StatusForbidden)
-					return
+
+		if ctx.Method() == http.MethodPost ||
+			ctx.Method() == http.MethodPut ||
+			ctx.Method() == http.MethodDelete ||
+			ctx.Method() == http.MethodPatch {
+			if len(requestOrigin) == 0 {
+				ctx.StopWithStatus(http.StatusForbidden)
+				return
+			}
+		}
+
+		// 对于一些访问用途，如CURL, 或者浏览器扩展程序， 传递的origin头则予以放行
+		if len(requestOrigin) > 0 && (strings.Index(requestOrigin, "https://") == 0 ||
+			strings.Index(requestOrigin, "http://") == 0) {
+			for _, origin := range cfg.AllowOrigin {
+				// 一般都是 *.xx.com 或者 zz.xx.com
+				if strings.Index(origin, "*") == 0 {
+					// 默认情况下 origin 获取不到
+					if strings.Index(requestOrigin, origin[1:]) == -1 {
+						ctx.StopWithStatus(http.StatusForbidden)
+						return
+					}
+				} else {
+					if !strings.EqualFold(requestOrigin, origin) {
+						ctx.StopWithStatus(http.StatusForbidden)
+						return
+					}
 				}
 			}
 		}
@@ -79,5 +96,6 @@ func NewCORS(cfg *CorsConfig) iris.Handler {
 			ctx.StatusCode(http.StatusNoContent)
 			return
 		}
+		ctx.Next()
 	}
 }
