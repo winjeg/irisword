@@ -32,6 +32,14 @@ type CorsConfig struct {
 	MaxAge      string   `json:"maxAge" yaml:"max-age"`
 }
 
+// NewDefaultCorsCfg 默认cors 配置
+func NewDefaultCorsCfg() *CorsConfig {
+	return &CorsConfig{
+		AllowOrigin: []string{"*"},
+		MaxAge:      "7200",
+	}
+}
+
 // NewCORS POST、PUT、PATCH和DELETE 标准上要求浏览器在这些请求上都要加上 Origin Header
 // CORS 安全策略主要应用于浏览器页面跨域访问的时候，对于非浏览器页面请求，业界通常不予以特殊拦截
 func NewCORS(cfg *CorsConfig) iris.Handler {
