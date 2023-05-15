@@ -49,7 +49,7 @@ func NewJWT(cfg *JWTConfig) iris.Handler {
 	return func(ctx iris.Context) {
 		session := GetFromJWT(ctx)
 		if session != nil {
-			ctx.Next()
+			ret.Ok(ctx, session)
 			return
 		}
 		sigKey := []byte(cfg.Secret)
