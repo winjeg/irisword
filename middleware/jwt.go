@@ -82,6 +82,33 @@ func NewJWT(cfg *JWTConfig) iris.Handler {
 	}
 }
 
+// JWTUpdate 必须要在初始化后调用
+func JWTUpdate(ctx iris.Context, claims interface{}) {
+	if localJWTCfg == nil {
+		return
+	}
+	sigKey := []byte(localJWTCfg.Secret)
+	token, err := jwt.Sign(jwt.HS256, sigKey, claims, jwt.MaxAge(time.Duration(localJWTCfg.Expire)*time.Second))
+	if err != nil {
+		ret.ServerError(ctx, "error generating token")
+		return
+	}
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	ctx.SetCookie(&http.Cookie{
+		Name:       localJWTCfg.Name,
+		Domain:     localJWTCfg.Domain,
+		Value:      string(token),
+		Path:       "/",
+		Expires:    time.Now().Add(time.Second * time.Duration(localJWTCfg.Expire)).In(loc).Local(),
+		RawExpires: "",
+		Secure:     false,
+		HttpOnly:   true,
+		SameSite:   0,
+		Raw:        "",
+		Unparsed:   nil,
+	})
+}
+
 func JWTSession(ctx iris.Context) {
 	if localJWTCfg == nil {
 		ret.Unauthorized(ctx, "user not login")
@@ -93,6 +120,10 @@ func JWTSession(ctx iris.Context) {
 	}
 	sigKey := []byte(localJWTCfg.Secret)
 	tk := ctx.GetCookie(localJWTCfg.Name)
+	if len(tk) == 0 {
+		ret.Unauthorized(ctx, "unauthorized!")
+		return
+	}
 	verifiedToken, err := jwt.Verify(jwt.HS256, sigKey, []byte(tk))
 	if err != nil || verifiedToken.StandardClaims.IssuedAt > time.Now().Unix() {
 		ret.Unauthorized(ctx, "unauthorized!")
