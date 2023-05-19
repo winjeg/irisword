@@ -12,7 +12,7 @@ type ErrorCode struct {
 type Ret struct {
 	Code string      `json:"code"`
 	Msg  string      `json:"msg,omitempty"`
-	Data interface{} `json:"data"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 // BizError should be greater than 1000
