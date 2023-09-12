@@ -141,10 +141,12 @@ func (m *monitor) Count(name string, count float64, tags ...string) {
 	key := m.composeKey(name, names)
 	if _, ok := counterMap[key]; !ok {
 		counterLock.Lock()
-		counterMap[key] = promauto.NewCounterVec(prometheus.CounterOpts{
-			Name: name,
-			Help: fmt.Sprintf("%s counter", name),
-		}, names)
+		if _, ok := counterMap[key]; !ok {
+			counterMap[key] = promauto.NewCounterVec(prometheus.CounterOpts{
+				Name: name,
+				Help: fmt.Sprintf("%s counter", name),
+			}, names)
+		}
 		counterLock.Unlock()
 	}
 	counterMap[key].WithLabelValues(values...).Add(count)
@@ -155,11 +157,13 @@ func (m *monitor) Timer(name string, v float64, tags ...string) {
 	key := m.composeKey(name, names)
 	if _, ok := timerMap[key]; !ok {
 		timerLock.Lock()
-		timerMap[key] = promauto.NewHistogramVec(prometheus.HistogramOpts{
-			Name:    name,
-			Help:    fmt.Sprintf("%s histogram", name),
-			Buckets: prometheus.ExponentialBucketsRange(0.1, 30000, 50),
-		}, names)
+		if _, ok := timerMap[key]; !ok {
+			timerMap[key] = promauto.NewHistogramVec(prometheus.HistogramOpts{
+				Name:    name,
+				Help:    fmt.Sprintf("%s histogram", name),
+				Buckets: prometheus.ExponentialBucketsRange(0.1, 30000, 50),
+			}, names)
+		}
 		timerLock.Unlock()
 	}
 	timerMap[key].WithLabelValues(values...).Observe(v)
@@ -170,10 +174,12 @@ func (m *monitor) Gauge(name string, v float64, tags ...string) {
 	key := m.composeKey(name, names)
 	if _, ok := gaugeMap[key]; !ok {
 		gaugeLock.Lock()
-		gaugeMap[key] = promauto.NewGaugeVec(prometheus.GaugeOpts{
-			Name: name,
-			Help: fmt.Sprintf("%s gauge", name),
-		}, names)
+		if _, ok := gaugeMap[key]; !ok {
+			gaugeMap[key] = promauto.NewGaugeVec(prometheus.GaugeOpts{
+				Name: name,
+				Help: fmt.Sprintf("%s gauge", name),
+			}, names)
+		}
 		gaugeLock.Unlock()
 	}
 	gaugeMap[key].WithLabelValues(values...).Set(v)
