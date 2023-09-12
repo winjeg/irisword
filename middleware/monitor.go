@@ -153,6 +153,11 @@ func (m *monitor) Count(name string, count float64, tags ...string) {
 }
 
 func (m *monitor) Timer(name string, v float64, tags ...string) {
+	buckets := prometheus.ExponentialBucketsRange(0.1, 30000, 50)
+	m.TimerWithBuckets(name, v, buckets, tags...)
+}
+
+func (m *monitor) TimerWithBuckets(name string, v float64, buckets []float64, tags ...string) {
 	names, values := m.tagParts(m.finalTags(tags))
 	key := m.composeKey(name, names)
 	if _, ok := timerMap[key]; !ok {
@@ -161,7 +166,7 @@ func (m *monitor) Timer(name string, v float64, tags ...string) {
 			timerMap[key] = promauto.NewHistogramVec(prometheus.HistogramOpts{
 				Name:    name,
 				Help:    fmt.Sprintf("%s histogram", name),
-				Buckets: prometheus.ExponentialBucketsRange(0.1, 30000, 50),
+				Buckets: buckets,
 			}, names)
 		}
 		timerLock.Unlock()
