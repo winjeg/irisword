@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/kataras/iris/v12 v12.2.0
 	github.com/kataras/jwt v0.1.8
+	github.com/prometheus/client_golang v1.15.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/winjeg/go-commons v1.2.3
 )
@@ -38,10 +39,10 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.23 // indirect
-	github.com/prometheus/client_golang v1.15.1 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
+	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/schollz/closestmatch v2.1.0+incompatible // indirect
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
