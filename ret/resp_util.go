@@ -96,7 +96,7 @@ func Unauthorized(ctx iris.Context, msg ...string) {
 	}
 	err := ctx.JSON(Ret{
 		Code: NoAuth.Code,
-		Msg:  fmt.Sprintf("%s: %s", NoAuth.Msg, ctx.Path()),
+		Msg:  fmt.Sprintf("%s: %s", m, ctx.Path()),
 	})
 	logErr(ctx, err)
 }

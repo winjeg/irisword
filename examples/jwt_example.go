@@ -29,8 +29,8 @@ func regJWT(app *iris.Application) {
 	jwtCfg := &middleware.JWTConfig{
 		Name:         "jwt_token",
 		Expire:       1500,
-		Domain:       "",
 		Secret:       "llklzn1231kz1",
+		Domain:       "",
 		Claims:       getInfo,
 		Deserializer: dec,
 	}
