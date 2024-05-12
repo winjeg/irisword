@@ -1,3 +1,6 @@
+
+[![Goproxy.cn](https://goproxy.cn/stats/github.com/winjeg/irisword/badges/download-count.svg)](https://goproxy.cn)
+
 # irisword
 
 A middleware set for iris web framework.
