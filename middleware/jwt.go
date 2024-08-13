@@ -78,7 +78,12 @@ func NewJWT(cfg *JWTConfig) iris.Handler {
 			Unparsed:   nil,
 		})
 		// when all set, set the session for later use.
-		ret.Ok(ctx, claims)
+		ret.Ok(ctx, map[string]interface{}{
+			"name":   cfg.Name,
+			"claims": cfg.Claims,
+			"expire": cfg.Expire,
+			"token":  string(token),
+		})
 	}
 }
 
